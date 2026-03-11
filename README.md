@@ -3,6 +3,7 @@
 Custom research test rig designed to measure the efficiency of gear transmissions using the **power recirculation method**.
 
 The system was designed and built as part of my engineering and master's research projects.
+The rig allows testing gear transmissions under realistic loads while using a relatively low-power drive motor.
 
 ---
 
@@ -10,20 +11,31 @@ The system was designed and built as part of my engineering and master's researc
 
 ![Power recirculation principle](images/power_recirculation_scheme.png)
 
-The test rig operates using the **power recirculation method**, commonly used in gear testing rigs such as the FZG test stand.
+The test rig operates using the **power recirculation method**, a commonly used approach in gear testing machines such as FZG rigs.
 
-In this method two gear pairs form a **closed power loop**. Instead of applying load using a brake, the load is introduced by mechanically twisting a split shaft using a flange coupling.
+Instead of applying load using a brake, the system forms a **closed mechanical power loop** using two gear pairs mounted on parallel shafts.
 
-This creates a circulating torque in the system while the drive motor only needs to compensate for mechanical losses.
+One of the shafts is split by a special **flange coupling** that allows controlled torsional preload to be introduced into the loop.
 
-Because of this, a relatively small motor can generate a much larger circulating power within the test loop.
+By twisting the coupling halves relative to each other, a circulating torque is generated in the drivetrain.
 
-Example operating conditions of the rig:
+The drive motor then supplies only the energy required to compensate for mechanical losses in the system, such as:
 
-* motor power: 120 W
-* circulating mechanical power: ~1.2 kW
-* maximum motor torque: 1.5 Nm
-* circulating torque in loop: up to ~15 Nm
+* gear mesh friction
+* bearing losses
+* seal friction
+* aerodynamic losses
+
+Because of this principle, a relatively small motor can generate a much larger circulating power within the test loop.
+
+Example operating parameters:
+
+| Parameter                   | Value   |
+| --------------------------- | ------- |
+| Motor power                 | 120 W   |
+| Motor torque                | 1.5 Nm  |
+| Maximum circulating torque  | ~15 Nm  |
+| Estimated circulating power | ~1.2 kW |
 
 ---
 
@@ -31,65 +43,195 @@ Example operating conditions of the rig:
 
 ![Energy balance diagram](images/energy_balance.png)
 
-The total mechanical losses in the system are determined from the electrical power required to maintain constant rotational speed.
+Mechanical losses are determined from the power required to maintain constant rotational speed.
 
-The motor torque and speed are measured through the motor controller.
+Total loss power is calculated from motor torque and speed:
 
-Total loss power is given by
-
+```text
 P_total = M_motor · ω_motor
+```
 
-To eliminate losses not related to gear load, a **two-stage measurement procedure** is used:
+To eliminate losses not related to gear load, a **two-stage measurement procedure** is used.
 
-1. measurement with the coupling unloaded
-2. measurement with circulating torque applied
+1. Measurement with the coupling unloaded
+2. Measurement with circulating torque applied
 
-This allows separating load-dependent losses from load-independent losses.
+This yields two values:
 
-Load-dependent loss power is calculated as:
-
-P_M = P_T1 − P_T2
+```text
+P_T1 = P_M + P_S
+P_T2 ≈ P_S
+```
 
 where
 
-P_T1 – total losses with torque applied
-P_T2 – losses with no torque applied
+* **P_M** – load-dependent losses
+* **P_S** – load-independent losses
 
-Because the test rig contains two gear pairs, the loss is assumed to be equally distributed between them.
+Load-dependent losses are obtained as:
 
-Gear efficiency is then calculated as
+```text
+P_M = P_T1 − P_T2
+```
 
-η = 1 − P_M / (2 · M_coupling · ω)
+Because the system contains two identical gear pairs, losses are assumed to be evenly distributed.
+
+Gear efficiency is therefore calculated as:
+
+```text
+η = 1 − P_M / (2 · M_sprz · ω)
+```
+
+where
+
+* **M_sprz** – torque introduced by the coupling
+* **ω** – shaft angular velocity
 
 ---
 
 # Mechanical design
 
-![CAD model](images/test_rig_cad.png)
+![CAD model of the rig](images/test_rig_cad.png)
 
-The mechanical structure consists of two parallel shafts:
+The rig consists of two parallel shafts:
 
 * **drive shaft**
 * **driven shaft**
 
-Both shafts carry the tested gear wheels.
+Both shafts carry the tested gears.
 
-The drive shaft is split by a specially designed **flange coupling** which allows controlled torsional preload of the system.
+The driven shaft is mounted on **linear positioning stages**, allowing adjustment of the center distance between shafts.
 
-By rotating the coupling halves relative to each other and locking them in place, a defined torque is introduced into the closed power loop.
+The position is controlled using an **M10 lead screw**, enabling center distance adjustment with approximately:
 
-The driven shaft is mounted on **linear positioning tables**, allowing precise adjustment of the center distance between the shafts.
+```text
+0.05 mm resolution
+```
 
-This enables testing gears with different:
+This allows accurate control of gear meshing conditions and easy adaptation of the rig to gears with different:
 
 * pitch diameters
 * face widths
 * gear ratios
 
-The modular design also allows testing other transmission types such as:
+Gear replacement typically requires approximately **5 minutes**.
 
-* timing belt drives
-* pulley systems
+The rig frame is constructed from a combination of:
+
+* aluminium structural profiles
+* machined aluminium components
+
+---
+
+# Torque loading mechanism
+
+![Torque loading coupling](images/loading_coupling.png)
+
+Torque in the circulating loop is introduced using a **split shaft flange coupling**.
+
+The coupling consists of two flanges connected by **three clamping bolts**.
+
+A lever arm attached to the coupling allows torsional preload to be applied using calibrated weights.
+
+Available lever arm radii:
+
+* 200 mm
+* 150 mm
+* 100 mm
+
+Torque is determined from the applied mass:
+
+```text
+M_sprz = m · g · r
+```
+
+where
+
+* **m** – applied mass
+* **g** – gravitational acceleration
+* **r** – lever arm length
+
+This simple mechanism allows repeatable torque loading without requiring an expensive torque sensor.
+
+---
+
+---
+
+# Finite element analysis of the loading lever
+
+![FEA of torque loading lever](images/lever_fea.png)
+
+To verify the mechanical strength of the torque loading lever, a **finite element analysis (FEA)** was performed using **ANSYS Static Structural**.
+
+The analysis evaluated the stress distribution in the lever when subjected to the maximum expected loading torque.
+
+### Boundary conditions
+
+The simulation assumed:
+
+- the hexagonal opening constrained to represent attachment to the coupling
+- force applied at the end of the lever corresponding to the maximum calibration mass
+- lever arm length of 200 mm
+
+The applied force corresponds to the maximum expected loading torque generated by the mass used during experiments.
+
+### Results
+
+The maximum equivalent stress obtained in the simulation was approximately:
+
+```text
+σ_max ≈ 14.6 MPa
+```
+This value is significantly below the yield strength of the aluminium alloy used for the lever, providing a large safety margin.
+
+The stress distribution indicates that the highest stresses occur near the transition between the lever arm and the hexagonal coupling interface, which is consistent with the expected bending load case.
+
+Conclusion
+
+The analysis confirms that the lever design provides sufficient structural strength for the intended operating conditions while maintaining low mass and simple manufacturability.
+
+# Drive system
+
+The rig is driven by a **Maxon DCX32 DC motor** equipped with a **GPX32 planetary gearbox**.
+
+Motor gearbox ratio:
+
+```text
+5.3 : 1
+```
+
+The motor drives the test rig through an additional **belt transmission** with ratio:
+
+```text
+1.5 : 1
+```
+
+The belt stage also serves as a **compliant coupling**, reducing sensitivity to misalignment and damping vibrations in the drivetrain.
+
+---
+
+# Gear mounting
+
+The initial design used **keyed shaft connections with locking nuts**.
+
+Due to the small shaft diameters this approach proved inconvenient during frequent gear changes.
+
+The final design uses **set screws engaging with flats on the shafts**, which simplifies installation while maintaining sufficient torque transmission.
+
+Gear installation typically takes **about 5 minutes**.
+
+---
+
+# Lubrication
+
+The rig supports two operating modes:
+
+* **dry operation**
+* **grease lubrication**
+
+Because of the open structure of the test rig, operation in an oil bath is not possible.
+
+Instead, lubrication tests are performed using **high-viscosity grease applied directly to the gear teeth**.
 
 ---
 
@@ -97,32 +239,32 @@ The modular design also allows testing other transmission types such as:
 
 ![Measurement system layout](images/measurement_setup.png)
 
-The test rig is equipped with sensors used to monitor operating conditions and collect experimental data.
+The test rig is equipped with several sensors used to monitor operating conditions.
 
 ### Temperature measurement
 
-An **infrared pyrometer** is used to measure:
+An **infrared pyrometer** measures:
 
 * tooth surface temperature
 * ambient temperature
 
-The sensor is mounted on an adjustable stand to ensure repeatable positioning.
+The sensor is mounted on an adjustable stand for repeatable positioning.
 
 ### Acoustic monitoring
 
-A **measurement microphone** records relative sound level changes during operation.
+A **measurement microphone** records relative changes in sound level during operation.
 
-The microphone is not used for absolute sound pressure measurements but rather to detect changes in gear meshing conditions during testing.
+The microphone is used only to observe **relative changes in gear noise**, not absolute sound pressure levels.
 
-### Motor controller data
+### Motor controller measurements
 
-A **Maxon EPOS4 motor controller** provides:
+A **Maxon EPOS4 motor controller** provides measurements of:
 
 * motor current
 * supply voltage
 * rotational speed
 
-These signals are used to determine the electrical input power required to compensate mechanical losses.
+These values are used to estimate the mechanical losses in the system.
 
 ---
 
@@ -132,18 +274,27 @@ These signals are used to determine the electrical input power required to compe
 
 The test rig is controlled using software written in **LabVIEW**.
 
-The program performs the following functions:
+The control software performs:
 
 * motor speed control
 * sensor data acquisition
-* real-time monitoring of test parameters
+* real-time monitoring
+* signal filtering
 * automatic data logging
 
-Communication with the motor controller is handled using the **EPOS Command Library**.
+Sensor data from the pyrometer and microphone are acquired using an **Arduino MKR Zero microcontroller**.
 
-Additional sensors are connected via an **Arduino MKR Zero microcontroller**, which communicates with the control software through a UART interface.
+The Arduino performs **data acquisition only**, while all processing is performed on the host computer.
 
-Data is sampled at **50 samples per second** and stored as CSV files for later analysis.
+Sampling frequency:
+
+```text
+50 samples per second
+```
+
+Each measurement run is saved as a **CSV file** for later analysis.
+
+The system supports **automated test sequences**, allowing measurements at multiple speeds to be performed automatically.
 
 ---
 
@@ -151,62 +302,56 @@ Data is sampled at **50 samples per second** and stored as CSV files for later a
 
 The control software includes automatic safety mechanisms.
 
-The test is immediately stopped if:
+The test is stopped if:
 
-* motor current exceeds allowed limits
-* temperature exceeds safe limits
+* motor current exceeds safe limits
+* temperature exceeds allowed limits
 * communication errors occur
-
----
-
-# Technical parameters
-
-| Parameter                   | Value   |
-| --------------------------- | ------- |
-| Maximum shaft speed         | 750 rpm |
-| Maximum motor torque        | 1.5 Nm  |
-| Maximum circulating torque  | ~15 Nm  |
-| Motor power                 | 120 W   |
-| Estimated circulating power | ~1.2 kW |
-
-These parameters allow testing of **small and medium power gear transmissions** under realistic operating loads.
-
----
-
-# Prototype
-
-![Prototype photo](images/test_rig_prototype.png)
-
-The initial version of the test rig used keyed shaft connections with locking nuts.
-
-Due to the small shaft diameters this solution proved inconvenient during frequent sample changes.
-
-The design was later improved by using **set screws with shaft flats**, which simplified installation and improved repeatability.
-
-The control system was also upgraded:
-
-* the original data acquisition card was replaced with **Arduino MKR Zero**
-* the motor is controlled by a **Maxon EPOS4 controller**
-* mechanical overload clutch was replaced by electronic motor protection
 
 ---
 
 # Validation
 
-![Example efficiency plot](images/efficiency_results.png)
+![Example efficiency results](images/efficiency_results.png)
 
-The test rig was validated using a steel gear pair manufactured from **C45 steel** (module 1, 48 teeth).
+The test rig was validated using a steel gear pair manufactured from **C45 steel**.
 
-Efficiency measurements were performed for multiple combinations of:
+Gear parameters:
+
+* module: 1
+* number of teeth: 48
+
+Measurements were performed for different combinations of:
 
 * rotational speed
-* torque
+* load torque
 * lubrication conditions
 
-The obtained efficiency trends matched typical gear efficiency characteristics reported in literature:
+Observed trends matched those reported in literature:
 
 * efficiency increases with load
-* efficiency decreases at high speed under dry conditions
-* lubrication significantly improves efficiency
+* efficiency decreases at high speed in dry operation
+* lubrication improves efficiency
 
-This confirms the correct operation of the test rig and its suitability for further experimental research.
+These results confirm correct operation of the test rig.
+
+---
+
+# Engineering challenges
+
+The most significant engineering challenge during the development of the rig was **obtaining reliable torque measurements**.
+
+A direct rotary torque sensor would significantly simplify the system but was beyond the project budget.
+
+Instead, torque estimation based on **motor current and motor torque constant** was implemented.
+
+---
+
+# Future improvements
+
+Several improvements have been identified for future versions of the rig:
+
+* larger shaft diameters to reduce torsional compliance
+* higher torque capacity
+* improved shaft connections using keyed joints
+* increased mechanical stiffness of the drivetrain
