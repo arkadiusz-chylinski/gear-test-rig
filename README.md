@@ -2,7 +2,7 @@
 
 Custom research test rig designed to measure the efficiency of gear transmissions using the **power recirculation method**.
 
-The system was designed and built as part of my engineering and master's research projects.
+The system was designed and built as part of my engineering and master's theses.
 The rig allows testing gear transmissions under realistic loads while using a relatively low-power drive motor.
 
 ---
